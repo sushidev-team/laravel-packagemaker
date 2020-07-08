@@ -64,9 +64,10 @@ class MakePackage extends GeneratorCommand
         $laravelVersions = $this->getLaravelVersionLists();
 
         $this->packageName = $name;
+
         $this->packageDescription = $this->ask('Whats the purpose of this package?', 'New package');
-        $this->packageCreatorName = $this->anticipate('Whats your name?', [$creatorName], '');
-        $this->packageCreatorEmail = $this->anticipate('Whats you e-mail address?', [$creatorEmail], '');
+        $this->packageCreatorName = $this->anticipate('Whats your name?', [$creatorName], $creatorName);
+        $this->packageCreatorEmail = $this->anticipate('Whats you e-mail address?', [$creatorEmail], $creatorEmail);
         $this->packageLaravelVersions = $this->choice(
             'For which laravel versions do you want to create this plugin.',
             $laravelVersions,
@@ -83,6 +84,13 @@ class MakePackage extends GeneratorCommand
         $this->generateEmptyFolder("docs") === false ? $this->error("[${name}] docs folder could not be created.") : $this->line("[${name}] docs folder has been created.");
 
         $this->info("The package ${name} has been created.");
+
+
+        if ($this->option("composer")){
+            $this->info("Updating composer.json...");
+            $this->updateComposer();
+            $this->info("Composer.json updated!");
+        }
 
     }
 
@@ -186,7 +194,7 @@ class MakePackage extends GeneratorCommand
             "{PACKAGE_DESCRIPTION}",
             "{EMAIL}",
             "{NAME}",
-            "{LARAVEL_VERISON}"
+            "{LARAVEL_VERSION}"
         ], [
             $this->packageName,
             $this->packageDescription,
@@ -276,6 +284,35 @@ class MakePackage extends GeneratorCommand
         );
 
         return $this;
+    }
+    
+    /**
+     * Modify the composer.json of your laravel installation and add the requirement to it.
+     *
+     * @return void
+     */
+    protected function updateComposer():void {
+
+        $composerJson = json_decode(File::get(base_path("composer.json")), true);
+
+        if (isset($composerJson['repositories']) == false){
+            $composerJson['repositories'] = [];
+        }
+
+        $composerJson['require'][$this->packageName] = "dev-master";
+
+        $composerJson['repositories'][$this->packageName] = [
+            'type' => 'path',
+            'url'  => config('package-maker.path' , 'packages')."/".$this->packageName,
+            'options' => [
+                "symlink" => true
+            ]
+        ];
+
+        File::put(base_path("composer.json"), json_encode($composerJson, JSON_PRETTY_PRINT));
+
+        shell_exec("composer require $this->packageName");
+
     }
 
 }
