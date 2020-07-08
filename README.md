@@ -5,7 +5,7 @@ Changes between versions will be tracked in the [CHANGELOG](CHANGELOG.md).
 ## Installation
 
 ```bash
-composer require ambersive/laravel-packagemaker
+composer require ambersive/packagemaker
 ```
 
 #### Optional: Publish the config
@@ -20,10 +20,18 @@ php artisan vendor:publish --tag=packagemaker
 ### Command
 
 ```bash
- php artisan make:package ambersive/demo
+ php artisan make:package ambersive/demo 
 ```
 
-This command will create a scaffold for your next laravel project.
+This command will create a scaffold for your next laravel project. Addtional options are:
+
+***--force***
+
+Will force the execution. Otherwise the command will not execute if a package with the same name exists.
+
+***--composer***
+
+Will add the package to the composer.json file of the laravel installation. It will also execute a "**compose require PACKAGE_NAME**".
 
 ## Feedback
 
