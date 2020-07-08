@@ -1,0 +1,41 @@
+{
+    "name": "{PACKAGE_NAME}",
+    "description": "{PACKAGE_DESCRIPTION}",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "{NAME}",
+            "email": "{EMAIL}"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "illuminate/support": "6.*|7.*|8.*",
+        "phlak/semver": "^3.2"
+    },
+    "require-dev": {
+        "php" : ">=7.4",
+        "illuminate/support": "{LARAVEL_VERSION}",
+        "laravel/framework": "{LARAVEL_VERSION}",
+        "ambersive/keepachangelog": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "AMBERSIVE\\KeepAChangelog\\": "src/"
+        }
+    },
+    "extra": {
+        "component": "package",
+        "laravel": {
+            "providers": [
+                "AMBERSIVE\\KeepAChangelog\\ChangelogServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": [
+            "@composer install",
+            "vendor/bin/phpunit"
+        ]
+    }
+}

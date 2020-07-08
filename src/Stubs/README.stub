@@ -1,0 +1,28 @@
+# {PACKAGE_NAME}
+
+{PACKAGE_DESCRIPTION}
+
+Changes between versions will be tracked in the [CHANGELOG](CHANGELOG.md).
+
+## Installation
+
+```bash
+composer require {PACKAGE_NAME}
+```
+
+## Usage
+
+
+This command will create a scaffold for your next laravel project.
+
+## Feedback
+
+Please feel free to give us feedback or any improvement suggestions.
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within this package, please send an e-mail to {NAME} via [{EMAIL}](mailto:{EMAIL}). All security vulnerabilities will be promptly addressed.
+
+## License
+
+This package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
