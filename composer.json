@@ -22,7 +22,7 @@
     "autoload": {
         "psr-4": {
             "AMBERSIVE\\PackageMaker\\": "src/",
-            "AMBERSIVE\\PackageMaker\\Tests": "test/"
+            "AMBERSIVE\\PackageMaker\\Tests\\": "test/"
         }
     },
     "extra": {
