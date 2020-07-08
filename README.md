@@ -5,7 +5,7 @@ Changes between versions will be tracked in the [CHANGELOG](CHANGELOG.md).
 ## Installation
 
 ```bash
-composer require ambersive/packagemaker
+composer require ambersive/packagemaker --dev
 ```
 
 #### Optional: Publish the config
