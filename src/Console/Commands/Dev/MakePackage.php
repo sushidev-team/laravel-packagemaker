@@ -82,6 +82,8 @@ class MakePackage extends GeneratorCommand
         $this->generatePhpUnitFile() == false ? $this->error("[${name}] phpunit.xml file could not be created.") : $this->line("[${name}] phpunit.xml file has been created.");
         $this->generateEmptyFolder("tests") === false ? $this->error("[${name}] test folder could not be created.") : $this->line("[${name}] test folder has been created.");
         $this->generateEmptyFolder("docs") === false ? $this->error("[${name}] docs folder could not be created.") : $this->line("[${name}] docs folder has been created.");
+        $this->generateEmptyFolder("src") === false ? $this->error("[${name}] src folder could not be created.") : $this->line("[${name}] src folder has been created.");
+        $this->generateServiceProvider() === false ? $this->error("[${name}] service provider coult not be created.") : $this->line("[${name}] service provider has been created.");
 
         $this->info("The package ${name} has been created.");
 
@@ -93,7 +95,12 @@ class MakePackage extends GeneratorCommand
         }
 
     }
-
+    
+    /**
+     * Returns list of possible laravel versions.
+     *
+     * @return array
+     */
     protected function getLaravelVersionLists(): array {
 
         $file = json_decode(File::get(__DIR__."/../../../../composer.json"), true);
@@ -189,18 +196,26 @@ class MakePackage extends GeneratorCommand
         $path = $this->getPath($this->packageName."/composer.json");
         $stub = $this->files->get($this->getStubFilePath("composer"));
 
+        $splittedName = explode("/", $this->packageName);
+        $name         = ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider"));
+        $namespace    = $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name);
+
         $content = $this->replaceTokens($stub, [
             "{PACKAGE_NAME}",
             "{PACKAGE_DESCRIPTION}",
             "{EMAIL}",
             "{NAME}",
-            "{LARAVEL_VERSION}"
+            "{LARAVEL_VERSION}",
+            "{NAMESPACE}",
+            "{PROVIDER}"
         ], [
             $this->packageName,
             $this->packageDescription,
             $this->packageCreatorEmail,
             $this->packageCreatorName,
-            implode("|", $this->packageLaravelVersions)
+            implode("|", $this->packageLaravelVersions),
+            str_replace("\\","\\\\",$namespace),
+            $name
         ]);
 
         $this->makeDirectory($path);
@@ -253,6 +268,30 @@ class MakePackage extends GeneratorCommand
         return $success;
 
     }
+    
+    /**
+     * Generate the required service provider
+     *
+     * @return bool
+     */
+    protected function generateServiceProvider(): bool {
+
+        $splittedName = explode("/", $this->packageName);
+        $name         = ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider"));
+
+        $path           = $this->getPath("$this->packageName/src/${name}.php");
+
+        $this->files->put($path, $this->sortImports($this->buildClassCustom($name, 'ServiceProvider', [
+            'DummyNamespace'
+        ], [
+            $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name)
+        ])));
+
+        $success = File::exists($path);
+
+        return $success; 
+
+    }
 
     /**
      * Build the class with the given name.
@@ -262,9 +301,9 @@ class MakePackage extends GeneratorCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClassCustom(String $name, String $stubname) {
+    protected function buildClassCustom(String $name, String $stubname, array $placeholder = [], array $replaceWith = []) {
         $stub = $this->files->get($this->getStubFilePath($stubname));
-        return $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
+        return $this->replaceNamespaceCustom($stub, $placeholder, $replaceWith)->replaceClass($stub, $name);
     }
 
     /**
@@ -274,6 +313,16 @@ class MakePackage extends GeneratorCommand
      */
     protected function getStubFilePath(String $stubname):String {
         return $this->getStub()."${stubname}.stub";
+    }
+
+    protected function replaceNamespaceCustom(&$stub, array $placeholder = [], array $replaceWith = []) {
+        $stub = str_replace(
+            $placeholder,
+            $replaceWith,
+            $stub
+        );
+
+        return $this;
     }
 
     protected function replaceTokens(&$stub, array $placeholder = [], array $replaceWith = []) {

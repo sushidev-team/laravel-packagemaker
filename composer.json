@@ -1,5 +1,5 @@
 {
-    "name": "ambersive/laravel-packagemaker",
+    "name": "ambersive/packagemaker",
     "description": "This package helps you to create laravel packages.",
     "license": "MIT",
     "authors": [
@@ -21,7 +21,8 @@
     },
     "autoload": {
         "psr-4": {
-            "AMBERSIVE\\PackageMaker\\": "src/"
+            "AMBERSIVE\\PackageMaker\\": "src/",
+            "AMBERSIVE\\PackageMaker\\Tests": "test/"
         }
     },
     "extra": {

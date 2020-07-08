@@ -21,14 +21,14 @@
     },
     "autoload": {
         "psr-4": {
-            "AMBERSIVE\\KeepAChangelog\\": "src/"
+            "{NAMESPACE}\\": "src/"
         }
     },
     "extra": {
         "component": "package",
         "laravel": {
             "providers": [
-                "AMBERSIVE\\KeepAChangelog\\ChangelogServiceProvider"
+                "{NAMESPACE}\\{PROVIDER}"
             ]
         }
     },

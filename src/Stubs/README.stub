@@ -10,11 +10,6 @@ Changes between versions will be tracked in the [CHANGELOG](CHANGELOG.md).
 composer require {PACKAGE_NAME}
 ```
 
-## Usage
-
-
-This command will create a scaffold for your next laravel project.
-
 ## Feedback
 
 Please feel free to give us feedback or any improvement suggestions.
