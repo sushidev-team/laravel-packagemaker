@@ -1,8 +1,8 @@
 <?php
 
-namespace AMBERSIVE\PackageMaker\Tests\Unit;
+namespace AMBERSIVE\Tests\Unit;
 
-use Tests\TestCase;
+use AMBERSIVE\Tests\TestCase;
 
 use Config;
 use File;

@@ -17,11 +17,18 @@
         "php" : ">=7.4",
         "illuminate/support": "{LARAVEL_VERSION}",
         "laravel/framework": "{LARAVEL_VERSION}",
-        "ambersive/keepachangelog": "dev-master"
+        "ambersive/keepachangelog": "dev-master",
+        "phpunit/phpunit": "^9.3@dev",
+        "orchestra/testbench": "3.8.*|4.*|5.*"
     },
     "autoload": {
         "psr-4": {
             "{NAMESPACE}\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "{NAMESPACE_TESTS}\\": "tests/"
         }
     },
     "extra": {

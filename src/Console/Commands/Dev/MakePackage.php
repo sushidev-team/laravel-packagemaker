@@ -83,7 +83,9 @@ class MakePackage extends GeneratorCommand
         $this->generateEmptyFolder("tests") === false ? $this->error("[${name}] test folder could not be created.") : $this->line("[${name}] test folder has been created.");
         $this->generateEmptyFolder("docs") === false ? $this->error("[${name}] docs folder could not be created.") : $this->line("[${name}] docs folder has been created.");
         $this->generateEmptyFolder("src") === false ? $this->error("[${name}] src folder could not be created.") : $this->line("[${name}] src folder has been created.");
-        $this->generateServiceProvider() === false ? $this->error("[${name}] service provider coult not be created.") : $this->line("[${name}] service provider has been created.");
+        $this->generateServiceProvider() === false ? $this->error("[${name}] service provider could not be created.") : $this->line("[${name}] service provider has been created.");
+        $this->generateTestCase() === false ? $this->error("[${name}] test case could not be created.") : $this->line("[${name}] test case has been created.");
+
 
         $this->info("The package ${name} has been created.");
 
@@ -196,9 +198,10 @@ class MakePackage extends GeneratorCommand
         $path = $this->getPath($this->packageName."/composer.json");
         $stub = $this->files->get($this->getStubFilePath("composer"));
 
-        $splittedName = explode("/", $this->packageName);
-        $name         = ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider"));
-        $namespace    = $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name);
+        $splittedName     = explode("/", $this->packageName);
+        $name             = ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider"));
+        $namespace        = $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name);
+        $namespaceTest    = $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel("Tests"))."\\".$name);
 
         $content = $this->replaceTokens($stub, [
             "{PACKAGE_NAME}",
@@ -207,6 +210,7 @@ class MakePackage extends GeneratorCommand
             "{NAME}",
             "{LARAVEL_VERSION}",
             "{NAMESPACE}",
+            "{NAMESPACE_TESTS}",
             "{PROVIDER}"
         ], [
             $this->packageName,
@@ -215,6 +219,7 @@ class MakePackage extends GeneratorCommand
             $this->packageCreatorName,
             implode("|", $this->packageLaravelVersions),
             str_replace("\\","\\\\",$namespace),
+            str_replace("\\","\\\\",$namespaceTest),
             $name
         ]);
 
@@ -285,6 +290,27 @@ class MakePackage extends GeneratorCommand
             'DummyNamespace'
         ], [
             $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name)
+        ])));
+
+        $success = File::exists($path);
+
+        return $success; 
+
+    }
+
+    protected function generateTestCase(): bool {
+
+        $splittedName = explode("/", $this->packageName);
+        $name         = ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."TestCase"));
+
+        $path           = $this->getPath("$this->packageName/tests/TestCase.php");
+
+        $this->files->put($path, $this->sortImports($this->buildClassCustom($name, 'TestCase', [
+            '{PACKAGE_PROVIDER_WITHNAMESPACE}',
+            '{PACKAGE_PROVIDER}'
+        ], [
+            $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name)."\\".ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider")),
+            ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider"))
         ])));
 
         $success = File::exists($path);
