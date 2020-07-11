@@ -1,5 +1,8 @@
 # Laravel Package Maker
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/b1e877e40358c5eece90/maintainability)](https://codeclimate.com/github/AMBERSIVE/laravel-packagemaker/maintainability)
+[![Build Status](https://travis-ci.org/AMBERSIVE/laravel-packagemaker.svg?branch=master)](https://travis-ci.org/AMBERSIVE/laravel-packagemaker)
+
 Changes between versions will be tracked in the [CHANGELOG](CHANGELOG.md).
 
 ## Installation
