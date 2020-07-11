@@ -65,6 +65,8 @@ class MakeCommandTest extends TestCase
         $this->assertTrue(File::exists(base_path("tmp/ambersive/demo/CHANGELOG.md")));
         $this->assertTrue(File::exists(base_path("tmp/ambersive/demo/composer.json")));
         $this->assertTrue(File::exists(base_path("tmp/ambersive/demo/src/DemoServiceProvider.php")));
+        $this->assertTrue(File::exists(base_path("tmp/ambersive/demo/.travis.yml")));
+        $this->assertTrue(File::exists(base_path("tmp/ambersive/demo/tests/TestCase.php")));
 
         $content = File::get(base_path("tmp/ambersive/demo/src/DemoServiceProvider.php"));
 

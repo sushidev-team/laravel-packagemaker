@@ -86,7 +86,7 @@ class MakePackage extends GeneratorCommand
         $this->generateEmptyFolder("src") === false ? $this->error("[${name}] src folder could not be created.") : $this->line("[${name}] src folder has been created.");
         $this->generateServiceProvider() === false ? $this->error("[${name}] service provider could not be created.") : $this->line("[${name}] service provider has been created.");
         $this->generateTestCase() === false ? $this->error("[${name}] test case could not be created.") : $this->line("[${name}] test case has been created.");
-
+        $this->generateTestTravis() === false ? $this->error("[${name}] travis-file could not be created.") : $this->line("[${name}] travis-file has been created.");
 
         $this->info("The package ${name} has been created.");
 
@@ -186,6 +186,22 @@ class MakePackage extends GeneratorCommand
 
         return $success;
 
+    }
+    
+    /**
+     * Generate the required travis file
+     *
+     * @return bool
+     */
+    protected function generateTestTravis(): bool {
+        $success = false;
+        $path = $this->getPath($this->packageName."/.travis.yml");
+        $stub = $this->files->get($this->getStubFilePath("travis"));
+        $this->makeDirectory($path);
+        $this->files->put($path, $stub);
+        $success = File::exists($path);
+        
+        return $success;
     }
 
     /**
