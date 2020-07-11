@@ -1,6 +1,6 @@
 <?php
 
-namespace AMBERSIVE\Tests;
+namespace {NAMESPACE_TESTS};
 
 use Illuminate\Contracts\Console\Kernel;
 

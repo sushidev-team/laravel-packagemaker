@@ -15,6 +15,7 @@ class MakePackage extends GeneratorCommand
 {
 
     protected String $packageName = "";
+    protected String $packagePath = "";
     protected String $packageDescription = "";
     protected String $packageCreatorName = "";
     protected String $packageCreatorEmail = ""; 
@@ -64,14 +65,14 @@ class MakePackage extends GeneratorCommand
         $laravelVersions = $this->getLaravelVersionLists();
 
         $this->packageName = $name;
-
+        $this->packagePath = $path;
         $this->packageDescription = $this->ask('Whats the purpose of this package?', 'New package');
         $this->packageCreatorName = $this->anticipate('Whats your name?', [$creatorName], $creatorName);
         $this->packageCreatorEmail = $this->anticipate('Whats you e-mail address?', [$creatorEmail], $creatorEmail);
         $this->packageLaravelVersions = $this->choice(
             'For which laravel versions do you want to create this plugin.',
             $laravelVersions,
-            sizeOf($laravelVersions) - 1,
+            array_search("6.*", $laravelVersions),
             $maxAttempts = null,
             $allowMultipleSelections = true
         );
@@ -106,7 +107,7 @@ class MakePackage extends GeneratorCommand
     protected function getLaravelVersionLists(): array {
 
         $file = json_decode(File::get(__DIR__."/../../../../composer.json"), true);
-        $laravel = data_get($file, 'require-dev.laravel/framework', '7.*|dev-master');
+        $laravel = data_get($file, 'require-dev.laravel/framework', '6.*|7.*|8.*|dev-master');
         return explode("|", $laravel);
 
     }
@@ -302,15 +303,19 @@ class MakePackage extends GeneratorCommand
 
         $splittedName = explode("/", $this->packageName);
         $name         = ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."TestCase"));
+        $path         = $this->getPath("$this->packageName/tests/TestCase.php");
 
-        $path           = $this->getPath("$this->packageName/tests/TestCase.php");
+        $namespaceTest    = $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel("Tests"))."\\".$name);
+
 
         $this->files->put($path, $this->sortImports($this->buildClassCustom($name, 'TestCase', [
             '{PACKAGE_PROVIDER_WITHNAMESPACE}',
-            '{PACKAGE_PROVIDER}'
+            '{PACKAGE_PROVIDER}',
+            '{NAMESPACE_TESTS}'
         ], [
             $this->getNamespace(ucfirst($splittedName[0])."\\".ucfirst(Str::camel($splittedName[1]))."\\".$name)."\\".ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider")),
-            ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider"))
+            ucfirst(Str::camel($splittedName[sizeOf($splittedName) - 1]."ServiceProvider")),
+            $namespaceTest,
         ])));
 
         $success = File::exists($path);
@@ -387,6 +392,9 @@ class MakePackage extends GeneratorCommand
         File::put(base_path("composer.json"), json_encode($composerJson, JSON_PRETTY_PRINT));
 
         shell_exec("composer require $this->packageName");
+
+        // Execute composer install in the package folder
+        shell_exec("cd $this->packagePath && composer install");
 
     }
 
